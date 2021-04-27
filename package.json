@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack serve --mode development --progress --open --hot ",
-    "build": "webpack --mode production --progress"
+    "build": "NODE_ENV=production webpack --mode production --progress"
   },
   "author": "Sandesh Chapagain",
   "license": "ISC",
