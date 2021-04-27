@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind utilities;
+
+@layer utilities {
+  .transition-normal {
+    @apply transition duration-500 ease-in-out;
+  }
+}
+
+@tailwind components;
