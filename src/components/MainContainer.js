@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import EditorPanel from "./EditorPanel";
-import DarkModeToggler from "./DarkModeToggler";
 import classNames from "classnames";
 
 export default function MainContainer() {
@@ -8,7 +7,7 @@ export default function MainContainer() {
 
   const classes = classNames(
     "transition-normal",
-    "flex dark:bg-gray-600 w-screen bg-indigo-700",
+    "flex dark:bg-theme-dark w-screen bg-theme",
     "h-screen w-full"
   );
 

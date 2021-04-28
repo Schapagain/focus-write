@@ -5,6 +5,27 @@ module.exports = {
   presets: [],
   darkMode: "class", // or 'media' or 'class'
   theme: {
+    extend: {
+      animation: {
+        "spin-test": "spin-test 1s infinite",
+      },
+      keyframes: {
+        "spin-test": {
+          to: {
+            transform: "rotate(360deg)",
+          },
+          from: {
+            transform: "rotate(0deg)",
+          },
+        },
+      },
+      colors: {
+        theme: {
+          DEFAULT: "#3A758D",
+          dark: "#0A394C",
+        },
+      },
+    },
     screens: {
       sm: "640px",
       md: "768px",

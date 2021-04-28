@@ -2,25 +2,39 @@ import React from "react";
 import classNames from "classnames";
 import { BiMoon, BiSun } from "react-icons/bi";
 
-export default function DarkModeToggler({ currentValue, onChange, className }) {
+export default function DarkModeToggler({
+  currentValue,
+  onChange,
+  className,
+  isLoading,
+}) {
   const classes = classNames(
-    className,
-    "w-12 h-12 flex p-1 justify-center items-center my-auto",
-    "absolute bg-gray-200 dark:bg-gray-800 inline-flex rounded-full",
-    "transition-normal transform "
+    " overflow-hidden w-12 h-12 flex p-1 justify-center items-center my-auto",
+    "absolute z-30 bg-gray-200 dark:bg-gray-800 inline-flex rounded-full",
+    "transition-normal transform top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+  );
+
+  const ringClasses = classNames(
+    "w-full block transition-normal h-full absolute inset-0 z-20 transform rounded-full",
+    "bg-theme block dark:bg-theme-dark animate-spin-test "
+  );
+
+  const ringSegmentClasses = classNames(
+    "w-1/2 h-full z-20 block absolute inset-0 transition-normal rounded-l-full",
+    {
+      "bg-green-500 transform opacity-100": isLoading,
+      "bg-theme dark:bg-theme-dark opacity-0": !isLoading,
+    }
   );
 
   return (
-    <>
-      <div
-        className={
-          className +
-          " bg-indigo-700 transition-normal dark:bg-gray-600 w-16 h-16 absolute transform rounded-full"
-        }
-      ></div>
+    <div className={className + " w-16 h-16 transform absolute"}>
+      <span aria-hidden={true} className={ringClasses}>
+        <span className={ringSegmentClasses}></span>
+      </span>
       <div
         role="button"
-        aria-label="toggle"
+        aria-label="dark-mode toggle"
         onClick={() => onChange(!currentValue)}
         className={classes}
       >
@@ -30,6 +44,6 @@ export default function DarkModeToggler({ currentValue, onChange, className }) {
           <BiSun className="text-xl " />
         )}
       </div>
-    </>
+    </div>
   );
 }
