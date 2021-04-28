@@ -24,7 +24,7 @@ export default function EditorPanel({ dark, setDark }) {
     saveToLocalStorage({ content, dateSaved: new Date() });
     setTimeout(() => {
       setLoading((loading) => loading - 1);
-    }, 1500);
+    }, 5000);
   };
 
   const handleDarkModeChange = (dark) => {
