@@ -25,6 +25,9 @@ module.exports = {
           dark: "#0A394C",
         },
       },
+      fontFamily: {
+        bitter: ["Bitter", "serif"],
+      },
     },
     screens: {
       sm: "640px",

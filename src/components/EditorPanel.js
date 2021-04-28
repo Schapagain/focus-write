@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import DarkModeToggler from "./DarkModeToggler";
 import { getFromLocalStorage, saveToLocalStorage } from "../utils";
+import { formatDistanceToNow } from "date-fns";
 
 export default function EditorPanel({ dark, setDark }) {
   const [content, setContent] = useState("");
   const [isLoading, setLoading] = useState(0);
   const [lastSaved, setLastSaved] = useState("");
+  const [message, setMessage] = useState("");
 
   const editorRef = useRef(null);
   const handleChange = () => {
@@ -15,8 +17,9 @@ export default function EditorPanel({ dark, setDark }) {
 
   const classes = classNames(
     "focus:outline-none dark:bg-gray-800 transition-normal",
-    "h-full w-full flex flex-col bg-gray-200",
-    "p-10 text-xl rounded-sm text-gray-900 dark:text-gray-100"
+    "h-full w-full flex flex-col bg-gray-200 font-bitter",
+    "p-10 text-2xl rounded-sm text-gray-900 dark:text-gray-100",
+    "overflow-y-auto no-scrollbar"
   );
 
   const handleSave = (content) => {
@@ -35,22 +38,27 @@ export default function EditorPanel({ dark, setDark }) {
   useEffect(() => {
     var intervalId = setInterval(function () {
       if (lastSaved != content) {
-        console.log("saving:::", content);
         handleSave(content);
         setLastSaved(content);
       }
     }, 5000);
     return () => {
-      console.log("cleaningup....");
       clearInterval(intervalId);
     };
   });
 
   useEffect(() => {
     const savedContent = getFromLocalStorage("content");
-    console.log("got saved content:::", savedContent);
     if (savedContent && editorRef) {
       editorRef.current.innerHTML = savedContent;
+      setContent(savedContent);
+      setLastSaved(savedContent);
+      setMessage(
+        `Recoverd from ${formatDistanceToNow(
+          new Date(getFromLocalStorage("dateSaved") || new Date())
+        )} ago`
+      );
+      setTimeout(() => setMessage(""), 2000);
     }
   }, []);
 
@@ -59,6 +67,11 @@ export default function EditorPanel({ dark, setDark }) {
       {isLoading > 0 && (
         <span className="absolute top-0 right-0 transform -translate-x-8 mx-5 -translate-y-full text-white">
           Saving...
+        </span>
+      )}
+      {message && (
+        <span className="absolute top-0 left-0 transform -translate-y-full text-white">
+          {message}
         </span>
       )}
       <div
