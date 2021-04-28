@@ -24,7 +24,7 @@ export default function EditorPanel({ dark, setDark }) {
     saveToLocalStorage({ content, dateSaved: new Date() });
     setTimeout(() => {
       setLoading((loading) => loading - 1);
-    }, 5000);
+    }, 1500);
   };
 
   const handleDarkModeChange = (dark) => {
@@ -39,7 +39,7 @@ export default function EditorPanel({ dark, setDark }) {
         handleSave(content);
         setLastSaved(content);
       }
-    }, 10000);
+    }, 5000);
     return () => {
       console.log("cleaningup....");
       clearInterval(intervalId);
