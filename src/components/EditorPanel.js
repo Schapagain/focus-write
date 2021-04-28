@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import DarkModeToggler from "./DarkModeToggler";
+import { getFromLocalStorage, saveToLocalStorage } from "../utils";
 
 export default function EditorPanel({ dark, setDark }) {
   const [content, setContent] = useState("");
@@ -20,10 +21,15 @@ export default function EditorPanel({ dark, setDark }) {
 
   const handleSave = (content) => {
     setLoading((loading) => loading + 1);
-    saveToLocalStorage(content);
+    saveToLocalStorage({ content, dateSaved: new Date() });
     setTimeout(() => {
       setLoading((loading) => loading - 1);
     }, 1500);
+  };
+
+  const handleDarkModeChange = (dark) => {
+    setDark(dark);
+    saveToLocalStorage({ dark });
   };
 
   useEffect(() => {
@@ -41,7 +47,7 @@ export default function EditorPanel({ dark, setDark }) {
   });
 
   useEffect(() => {
-    const savedContent = getFromLocalStorage();
+    const savedContent = getFromLocalStorage("content");
     console.log("got saved content:::", savedContent);
     if (savedContent && editorRef) {
       editorRef.current.innerHTML = savedContent;
@@ -62,27 +68,11 @@ export default function EditorPanel({ dark, setDark }) {
         className={classes}
       ></div>
       <DarkModeToggler
-        onChange={setDark}
+        onChange={handleDarkModeChange}
         currentValue={dark}
         className="right-0 top-0 translate-x-1/2 -translate-y-1/2"
         isLoading={isLoading}
       />
     </div>
   );
-}
-
-function saveToLocalStorage(content) {
-  console.log(content);
-  localStorage.setItem("content", content);
-}
-
-function getFromLocalStorage() {
-  return localStorage.getItem("content") || "";
-}
-
-// Then call it as createInterval(funca,dynamicValue,500);
-function createInterval(f, dynamicParameter, interval) {
-  setInterval(function () {
-    f(dynamicParameter);
-  }, interval);
 }
