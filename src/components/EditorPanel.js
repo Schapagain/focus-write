@@ -1,14 +1,23 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import DarkModeToggler from "./DarkModeToggler";
-import { getFromLocalStorage, saveToLocalStorage } from "../utils";
-import { formatDistanceToNow } from "date-fns";
+import { saveToLocalStorage } from "../utils";
+import { DocumentsContext } from "../context/DocumentsContext";
+import NewDocumentButton from "./NewDocumentButton";
 
 export default function EditorPanel({ dark, setDark }) {
   const [content, setContent] = useState("");
-  const [isLoading, setLoading] = useState(0);
+
   const [lastSaved, setLastSaved] = useState("");
   const [message, setMessage] = useState("");
+  const [document, setDocument] = useState({});
+
+  const {
+    updateDocument,
+    currentDocument,
+    isLoading,
+    addDocument,
+  } = useContext(DocumentsContext);
 
   const editorRef = useRef(null);
   const handleChange = () => {
@@ -22,23 +31,22 @@ export default function EditorPanel({ dark, setDark }) {
     "overflow-y-auto no-scrollbar"
   );
 
-  const handleSave = (content) => {
-    setLoading((loading) => loading + 1);
-    saveToLocalStorage({ content, dateSaved: new Date() });
-    setTimeout(() => {
-      setLoading((loading) => loading - 1);
-    }, 1500);
-  };
-
   const handleDarkModeChange = (dark) => {
     setDark(dark);
     saveToLocalStorage({ dark });
   };
 
   useEffect(() => {
+    if (lastSaved != content) {
+      updateDocument(document.id, content);
+    }
+    setDocument(currentDocument);
+  }, [currentDocument]);
+
+  useEffect(() => {
     var intervalId = setInterval(function () {
       if (lastSaved != content) {
-        handleSave(content);
+        updateDocument(document.id, content);
         setLastSaved(content);
       }
     }, 5000);
@@ -48,19 +56,12 @@ export default function EditorPanel({ dark, setDark }) {
   });
 
   useEffect(() => {
-    const savedContent = getFromLocalStorage("content");
-    if (savedContent && editorRef) {
-      editorRef.current.innerHTML = savedContent;
-      setContent(savedContent);
-      setLastSaved(savedContent);
-      setMessage(
-        `Recoverd from ${formatDistanceToNow(
-          new Date(getFromLocalStorage("dateSaved") || new Date())
-        )} ago`
-      );
-      setTimeout(() => setMessage(""), 2000);
+    if (editorRef) {
+      editorRef.current.innerHTML = document.content;
+      setContent(document.content);
+      setLastSaved(document.content);
     }
-  }, []);
+  }, [document]);
 
   return (
     <div className="w-5/6 h-5/6 m-auto relative">
@@ -74,6 +75,9 @@ export default function EditorPanel({ dark, setDark }) {
           {message}
         </span>
       )}
+      <div className="absolute top-0 left-1/2 transform -translate-y-full -translate-x-1/2 text-white text-3xl p-1">
+        {document.title}
+      </div>
       <div
         ref={editorRef}
         contentEditable={true}
@@ -86,6 +90,15 @@ export default function EditorPanel({ dark, setDark }) {
         className="right-0 top-0 translate-x-1/2 -translate-y-1/2"
         isLoading={isLoading}
       />
+      <NewDocumentButton
+        onClick={addDocument}
+        className="left-0-0 top-0 -translate-x-1/2 -translate-y-1/2"
+      />
     </div>
   );
 }
+
+EditorPanel.defaultProps = {
+  document: {},
+  setDark: () => null,
+};
