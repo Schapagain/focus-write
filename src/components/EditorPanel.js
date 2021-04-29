@@ -3,7 +3,7 @@ import classNames from "classnames";
 import DarkModeToggler from "./DarkModeToggler";
 import { saveToLocalStorage } from "../utils";
 import { DocumentsContext } from "../context/DocumentsContext";
-import NewDocumentButton from "./NewDocumentButton";
+import DocumentTitle from "./DocumentTitle";
 
 export default function EditorPanel({ dark, setDark }) {
   const [content, setContent] = useState("");
@@ -12,12 +12,9 @@ export default function EditorPanel({ dark, setDark }) {
   const [message, setMessage] = useState("");
   const [document, setDocument] = useState({});
 
-  const {
-    updateDocument,
-    currentDocument,
-    isLoading,
-    addDocument,
-  } = useContext(DocumentsContext);
+  const { updateDocument, currentDocument, isLoading } = useContext(
+    DocumentsContext
+  );
 
   const editorRef = useRef(null);
   const handleChange = () => {
@@ -38,7 +35,7 @@ export default function EditorPanel({ dark, setDark }) {
 
   useEffect(() => {
     if (lastSaved != content) {
-      updateDocument(document.id, content);
+      updateDocument({ id: document.id, content });
     }
     setDocument(currentDocument);
   }, [currentDocument]);
@@ -46,7 +43,7 @@ export default function EditorPanel({ dark, setDark }) {
   useEffect(() => {
     var intervalId = setInterval(function () {
       if (lastSaved != content) {
-        updateDocument(document.id, content);
+        updateDocument({ id: document.id, content });
         setLastSaved(content);
       }
     }, 5000);
@@ -60,40 +57,42 @@ export default function EditorPanel({ dark, setDark }) {
       editorRef.current.innerHTML = document.content;
       setContent(document.content);
       setLastSaved(document.content);
+      editorRef.current.focus();
     }
   }, [document]);
 
   return (
-    <div className="w-5/6 h-5/6 m-auto relative">
-      {isLoading > 0 && (
-        <span className="absolute top-0 right-0 transform -translate-x-8 mx-5 -translate-y-full text-white">
-          Saving...
-        </span>
-      )}
-      {message && (
-        <span className="absolute top-0 left-0 transform -translate-y-full text-white">
-          {message}
-        </span>
-      )}
-      <div className="absolute top-0 left-1/2 transform -translate-y-full -translate-x-1/2 text-white text-3xl p-1">
-        {document.title}
+    <div className="flex flex-col w-full">
+      <div className="text-white animate-fade-in text-center w-1/2 mx-auto h-0.5/12 p-3">
+        <DocumentTitle
+          title={document.title}
+          onChange={(title) => updateDocument({ id: document.id, title })}
+        />
       </div>
-      <div
-        ref={editorRef}
-        contentEditable={true}
-        onInput={handleChange}
-        className={classes}
-      ></div>
-      <DarkModeToggler
-        onChange={handleDarkModeChange}
-        currentValue={dark}
-        className="right-0 top-0 translate-x-1/2 -translate-y-1/2"
-        isLoading={isLoading}
-      />
-      <NewDocumentButton
-        onClick={addDocument}
-        className="left-0-0 top-0 -translate-x-1/2 -translate-y-1/2"
-      />
+      <div className="relative h-11.5/12">
+        {isLoading > 0 && (
+          <span className="absolute top-0 right-0 transform -translate-x-8 mx-5 -translate-y-full text-white">
+            Saving...
+          </span>
+        )}
+        {message && (
+          <span className="absolute top-0 left-0 transform -translate-y-full text-white">
+            {message}
+          </span>
+        )}
+        <div
+          ref={editorRef}
+          contentEditable={true}
+          onInput={handleChange}
+          className={classes}
+        ></div>
+        <DarkModeToggler
+          onChange={handleDarkModeChange}
+          currentValue={dark}
+          className="right-0 top-0 translate-x-1/2 -translate-y-1/2"
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   );
 }
