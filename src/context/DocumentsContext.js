@@ -1,5 +1,10 @@
 import React, { createContext, useState, useEffect, useCallback } from "react";
-import { getFromLocalStorage, saveToLocalStorage } from "../utils";
+import {
+  getFromLocalStorage,
+  getRandomAdjective,
+  getRandomNoun,
+  saveToLocalStorage,
+} from "../utils";
 import { v4 as uuid } from "uuid";
 
 export const DocumentsContext = createContext();
@@ -22,6 +27,10 @@ export default function DocumentsContextProvider({ children }) {
 
   useEffect(() => {
     let savedDocuments = getFromLocalStorage("documents");
+    if (!Array.isArray(savedDocuments)) {
+      localStorage.clear();
+      savedDocuments = null;
+    }
     if (!savedDocuments) {
       addDocument();
     } else {
@@ -32,9 +41,7 @@ export default function DocumentsContextProvider({ children }) {
   const addDocument = useCallback(() => {
     const newDocument = {
       id: uuid(),
-      title: `Cool New Idea #${
-        ((documents && Object.keys(documents).length) || 0) + 1
-      }`,
+      title: `${getRandomAdjective()} ${getRandomAdjective()} ${getRandomNoun()}`,
       content: "",
       dateCreate: new Date(),
     };
