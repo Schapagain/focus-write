@@ -63,7 +63,7 @@ export default function EditorPanel({ dark, setDark }) {
 
   return (
     <div className="flex flex-col w-full">
-      <div className="text-white animate-fade-in text-center w-1/2 mx-auto h-0.5/12 p-3">
+      <div className="text-white animate-fade-in text-center w-1/2 mx-auto mb-3 h-0.5/12 p-3">
         <DocumentTitle
           title={document.title}
           onChange={(title) => updateDocument({ id: document.id, title })}
