@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import EditorPanel from "./EditorPanel";
 import classNames from "classnames";
 import { getFromLocalStorage } from "../utils";
+import Sidebar from "./Sidebar";
 
 export default function MainContainer() {
-  const [dark, setDark] = useState(
-    () => getFromLocalStorage("dark") === "true"
-  );
+  const [dark, setDark] = useState(() => getFromLocalStorage("dark"));
 
   const classes = classNames(
     "transition-normal",
@@ -25,6 +24,7 @@ export default function MainContainer() {
       <div className="flex mx-auto items-center flex-col w-full h-full max-w-screen-xl">
         <div className="relative w-full h-full flex justify-center">
           <EditorPanel dark={dark} setDark={setDark} />
+          <Sidebar />
         </div>
       </div>
     </div>
