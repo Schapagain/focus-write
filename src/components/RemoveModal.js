@@ -11,14 +11,12 @@ export default function RemoveModal({ onDelete, onClose, isLoading }) {
       </ModalBody>
       <ModalFooter>
         <Button
-          color="blue-500"
-          className="rounded-lg ml-auto mr-2"
+          className="rounded-lg bg-blue-500 text-white hover:opacity-80 ml-auto mr-2"
           onClick={onClose}
           text="Discard"
         />
         <Button
-          color="red-500"
-          className="rounded-lg"
+          className="rounded-lg bg-red-500 text-white hover:opacity-80"
           onClick={onDelete}
           text="Delete"
         />
