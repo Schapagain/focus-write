@@ -1,9 +1,23 @@
+@import url("https://fonts.googleapis.com/css2?family=Bitter:wght@400&display=swap");
+
 @tailwind base;
 @tailwind utilities;
 
 @layer utilities {
   .transition-normal {
     @apply transition duration-500 ease-in-out;
+  }
+
+  @variants responsive {
+    /* Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+    }
   }
 }
 
