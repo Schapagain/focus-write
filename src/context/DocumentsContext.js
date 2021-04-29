@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 import { getFromLocalStorage, saveToLocalStorage } from "../utils";
 import { v4 as uuid } from "uuid";
 
@@ -16,7 +16,7 @@ lastSaved: DateString
 */
 
 export default function DocumentsContextProvider({ children }) {
-  const [documents, setDocuments] = useState(null);
+  const [documents, setDocuments] = useState([]);
   const [isLoading, setLoading] = useState(0);
   const [currentDocument, setCurrentDocument] = useState({});
 
@@ -29,7 +29,7 @@ export default function DocumentsContextProvider({ children }) {
     }
   }, []);
 
-  const addDocument = () => {
+  const addDocument = useCallback(() => {
     const newDocument = {
       id: uuid(),
       title: `Cool New Idea #${
@@ -38,49 +38,62 @@ export default function DocumentsContextProvider({ children }) {
       content: "",
       dateCreate: new Date(),
     };
-    setDocuments((documents) => ({
-      ...documents,
-      [newDocument.id]: newDocument,
-    }));
+    setDocuments((documents) => [...documents, newDocument]);
     setCurrentDocument(newDocument);
-  };
+  });
 
-  const removeDocument = (id) => {
-    setDocuments((documents) => {
-      delete documents[id];
-      return { ...documents };
-    });
-  };
+  const removeDocument = useCallback((id) => {
+    const index = documents.findIndex((document) => document.id == id);
+    console.log("removing document::", id);
+    if (index > -1) {
+      if (documents.length === 1) {
+        addDocument();
+      } else if (index == documents.length - 1) {
+        setCurrentDocument(documents[0]);
+      } else {
+        setCurrentDocument(documents[index + 1]);
+      }
+      console.log("index found at:", index);
+      setDocuments((documents) =>
+        documents.filter((document) => document.id != id)
+      );
+    }
+  });
 
-  const updateDocument = (id, content) => {
-    setDocuments((documents) => ({
-      ...documents,
-      [id]: { ...documents[id], content, lastSaved: new Date() },
-    }));
-  };
+  const updateDocument = useCallback((document) => {
+    if (!document || !document.id) return;
+    const index = documents.findIndex((d) => d.id == document.id);
+    if (index > -1) {
+      setDocuments((documents) => [
+        ...documents.slice(0, index),
+        { ...documents[index], ...document, lastSaved: new Date() },
+        ...documents.slice(index + 1),
+      ]);
+    }
+  });
 
   useEffect(() => {
-    if (documents) {
+    if (documents && documents.length) {
       saveDocuments();
-      if (!currentDocument.id) setCurrentDocument(Object.values(documents)[0]);
+      if (!currentDocument.id) setCurrentDocument(documents[0]);
     }
   }, [documents]);
 
-  const saveDocuments = () => {
+  const saveDocuments = useCallback(() => {
     setLoading((loading) => loading + 1);
     saveToLocalStorage({
       documents,
       dateSaved: new Date(),
-      count: Object.keys(documents).length,
+      count: documents.length,
     });
     setTimeout(() => {
       setLoading((loading) => loading - 1);
     }, 1500);
-  };
+  });
 
-  const changeCurrentDocument = (newCurrent) => {
+  const changeCurrentDocument = useCallback((newCurrent) => {
     setCurrentDocument(newCurrent);
-  };
+  });
 
   return (
     <DocumentsContext.Provider
