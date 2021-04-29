@@ -22,7 +22,7 @@ export default function MainContainer() {
   return (
     <div className={classes}>
       <div className="flex mx-auto items-center flex-col w-full h-full max-w-screen-xl">
-        <div className="relative w-full h-full flex justify-center">
+        <div className="relative w-full h-full flex p-20 justify-center">
           <EditorPanel dark={dark} setDark={setDark} />
           <Sidebar />
         </div>
