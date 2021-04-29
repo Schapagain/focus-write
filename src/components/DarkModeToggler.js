@@ -16,21 +16,21 @@ export default function DarkModeToggler({
 
   const ringClasses = classNames(
     "w-full block transition-normal h-full absolute inset-0 z-20 transform rounded-full",
-    "bg-theme block dark:bg-theme-dark animate-spin-test "
+    "bg-theme block dark:bg-theme-dark"
   );
 
   const ringSegmentClasses = classNames(
-    "w-1/2 h-full z-20 block absolute inset-0 transition-normal rounded-l-full",
+    "w-1/2 h-full origin-right z-20 transform block absolute inset-0 transition-normal rounded-l-full",
     {
-      "bg-green-500 transform opacity-100": isLoading,
-      "bg-theme dark:bg-theme-dark opacity-0": !isLoading,
+      "bg-green-500 animate-spin-test": isLoading,
+      "bg-theme dark:bg-theme-dark": !isLoading,
     }
   );
 
   return (
     <div className={className + " w-16 h-16 transform absolute"}>
       <span aria-hidden={true} className={ringClasses}>
-        <span className={ringSegmentClasses}></span>
+        {isLoading > 0 && <span className={ringSegmentClasses}></span>}
       </span>
       <div
         role="button"
