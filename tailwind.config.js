@@ -8,8 +8,52 @@ module.exports = {
     extend: {
       animation: {
         "spin-test": "spin-test 1s infinite",
+        "modal-slide-down": "modal-slide-down 500ms",
+        shake: "shake 100ms",
+        "fade-in": "fade-in 500ms",
+        "scale-rotate": "scale-rotate 500ms",
       },
       keyframes: {
+        "fade-in": {
+          to: {
+            opacity: "1",
+          },
+          from: {
+            opacity: "0",
+          },
+        },
+        "scale-rotate": {
+          to: {
+            transform: "rotate(360deg) scale(110)",
+          },
+        },
+        shake: {
+          "10%, 90%": {
+            transform: "translate3d(-1px, 0, 0)",
+          },
+
+          "20%, 80%": {
+            transform: "translate3d(2px, 0, 0)",
+          },
+
+          "30%, 50%, 70%": {
+            transform: "translate3d(-4px, 0, 0)",
+          },
+
+          "40%, 60%": {
+            transform: "translate3d(4px, 0, 0)",
+          },
+        },
+        "modal-slide-down": {
+          to: {
+            opacity: "100%",
+            top: "10%",
+          },
+          from: {
+            opacity: "0",
+            top: "-10%",
+          },
+        },
         "spin-test": {
           to: {
             transform: "rotate(360deg)",
@@ -464,6 +508,19 @@ module.exports = {
       "3/6": "50%",
       "4/6": "66.666667%",
       "5/6": "83.333333%",
+      "0.5/12": "4.16667%",
+      "1/12": "8.333333%",
+      "2/12": "16.666667%",
+      "3/12": "25%",
+      "4/12": "33.333333%",
+      "5/12": "41.666667%",
+      "6/12": "50%",
+      "7/12": "58.333333%",
+      "8/12": "66.666667%",
+      "9/12": "75%",
+      "10/12": "83.333333%",
+      "11/12": "91.666667%",
+      "11.5/12": "95.83333%",
       full: "100%",
       screen: "100vh",
     }),
@@ -679,6 +736,7 @@ module.exports = {
       45: "45deg",
       90: "90deg",
       180: "180deg",
+      360: "360deg",
     },
     saturate: {
       0: "0",
@@ -862,7 +920,7 @@ module.exports = {
     alignContent: ["responsive"],
     alignItems: ["responsive"],
     alignSelf: ["responsive"],
-    animation: ["responsive"],
+    animation: ["responsive", "hover"],
     appearance: ["responsive"],
     backdropBlur: ["responsive"],
     backdropBrightness: ["responsive"],
