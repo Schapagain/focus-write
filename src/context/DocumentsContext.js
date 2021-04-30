@@ -27,6 +27,7 @@ export default function DocumentsContextProvider({ children }) {
 
   useEffect(() => {
     let savedDocuments = getFromLocalStorage("documents");
+    let savedCurrent = getFromLocalStorage("currentDocument");
     if (!Array.isArray(savedDocuments)) {
       localStorage.clear();
       savedDocuments = null;
@@ -35,6 +36,9 @@ export default function DocumentsContextProvider({ children }) {
       addDocument();
     } else {
       setDocuments(savedDocuments);
+    }
+    if (savedCurrent) {
+      setCurrentDocument(savedCurrent);
     }
   }, []);
 
@@ -51,16 +55,14 @@ export default function DocumentsContextProvider({ children }) {
 
   const removeDocument = useCallback((id) => {
     const index = documents.findIndex((document) => document.id == id);
-    console.log("removing document::", id);
     if (index > -1) {
       if (documents.length === 1) {
         addDocument();
       } else if (index == documents.length - 1) {
-        setCurrentDocument(documents[0]);
+        setCurrentDocument(documents[documents.length - 2]);
       } else {
         setCurrentDocument(documents[index + 1]);
       }
-      console.log("index found at:", index);
       setDocuments((documents) =>
         documents.filter((document) => document.id != id)
       );
@@ -76,6 +78,11 @@ export default function DocumentsContextProvider({ children }) {
         { ...documents[index], ...document, lastSaved: new Date() },
         ...documents.slice(index + 1),
       ]);
+      if (document.id === currentDocument.id)
+        setCurrentDocument((currentDocument) => ({
+          ...currentDocument,
+          ...document,
+        }));
     }
   });
 
@@ -85,6 +92,12 @@ export default function DocumentsContextProvider({ children }) {
       if (!currentDocument.id) setCurrentDocument(documents[0]);
     }
   }, [documents]);
+
+  useEffect(() => {
+    if (currentDocument) {
+      saveToLocalStorage({ currentDocument });
+    }
+  }, [currentDocument]);
 
   const saveDocuments = useCallback(() => {
     setLoading((loading) => loading + 1);
