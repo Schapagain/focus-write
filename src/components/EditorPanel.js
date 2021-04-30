@@ -1,40 +1,36 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import DarkModeToggler from "./DarkModeToggler";
-import { saveToLocalStorage } from "../utils";
 import { DocumentsContext } from "../context/DocumentsContext";
 import DocumentTitle from "./DocumentTitle";
+import { AppContext } from "../context/AppContext";
 
-export default function EditorPanel({ dark, setDark }) {
+export default function EditorPanel() {
   const [content, setContent] = useState("");
-
   const [lastSaved, setLastSaved] = useState("");
-  const [message, setMessage] = useState("");
   const [document, setDocument] = useState({});
 
   const { updateDocument, currentDocument, isLoading } = useContext(
     DocumentsContext
   );
 
+  const { theme, changeTheme } = useContext(AppContext);
+
   const editorRef = useRef(null);
   const handleChange = () => {
-    setContent(editorRef.current.innerHTML);
+    setContent(editorRef.current.innerText);
   };
 
   const classes = classNames(
-    "focus:outline-none dark:bg-gray-800 transition-normal",
+    "focus:outline-none dark:bg-gray-800 ",
     "h-full w-full flex flex-col bg-gray-200 font-bitter",
-    "p-10 text-2xl rounded-sm text-gray-900 dark:text-gray-100",
-    "overflow-y-auto no-scrollbar"
+    "p-10 text-xl rounded-sm text-gray-900 dark:text-gray-100",
+    "overflow-y-auto no-scrollbar",
+    "transition-normal"
   );
 
-  const handleDarkModeChange = (dark) => {
-    setDark(dark);
-    saveToLocalStorage({ dark });
-  };
-
   useEffect(() => {
-    if (lastSaved != content) {
+    if (document.id != currentDocument.id && lastSaved != content) {
       updateDocument({ id: document.id, content });
     }
     setDocument(currentDocument);
@@ -54,12 +50,16 @@ export default function EditorPanel({ dark, setDark }) {
 
   useEffect(() => {
     if (editorRef) {
-      editorRef.current.innerHTML = document.content;
+      editorRef.current.innerText = document.content || "";
       setContent(document.content);
       setLastSaved(document.content);
       editorRef.current.focus();
     }
   }, [document]);
+
+  const toggleDarkMode = () => {
+    changeTheme({ ...theme, dark: !theme.dark });
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -75,11 +75,6 @@ export default function EditorPanel({ dark, setDark }) {
             Saving...
           </span>
         )}
-        {message && (
-          <span className="absolute top-0 left-0 transform -translate-y-full text-white">
-            {message}
-          </span>
-        )}
         <div
           ref={editorRef}
           contentEditable={true}
@@ -87,8 +82,8 @@ export default function EditorPanel({ dark, setDark }) {
           className={classes}
         ></div>
         <DarkModeToggler
-          onChange={handleDarkModeChange}
-          currentValue={dark}
+          onChange={toggleDarkMode}
+          currentValue={theme && theme.dark}
           className="right-0 top-0 translate-x-1/2 -translate-y-1/2"
           isLoading={isLoading}
         />
