@@ -1,11 +1,11 @@
 import React from "react";
 import MainContainer from "./components/MainContainer";
-import DocumentsContextProvider from "./context/DocumentsContext";
+import AppContextProvider from "./context/AppContext";
 
 export default function App() {
   return (
-    <DocumentsContextProvider>
+    <AppContextProvider>
       <MainContainer />
-    </DocumentsContextProvider>
+    </AppContextProvider>
   );
 }
