@@ -13,9 +13,13 @@ export default function DocumentTitle({ title, onChange }) {
   }, [title]);
 
   const handleSave = () => {
-    if (tempTitle && tempTitle != originalTitle) {
-      onChange(tempTitle);
-      setOriginalTitle(tempTitle);
+    if (!tempTitle) {
+      setTempTitle(originalTitle);
+    } else {
+      if (tempTitle != originalTitle) {
+        onChange(tempTitle);
+        setOriginalTitle(tempTitle);
+      }
     }
     setShowInput(false);
   };
