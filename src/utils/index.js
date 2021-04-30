@@ -2,7 +2,6 @@ import adjectives from "./adjectives";
 import nouns from "./nouns";
 
 export function saveToLocalStorage(obj) {
-  console.log("saving to local::", obj);
   Object.keys(obj).forEach((key) =>
     localStorage.setItem([key], JSON.stringify(obj[key]))
   );
