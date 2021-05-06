@@ -40,7 +40,7 @@ export default function EditorPanel() {
   }, [currentDocument]);
 
   useEffect(() => {
-    if (editorRef) {
+    if (editorRef?.current) {
       editorRef.current.innerHTML = document.content || "";
       setContent(document.content);
       setLastSaved(document.content);
@@ -52,13 +52,15 @@ export default function EditorPanel() {
     changeTheme({ ...theme, dark: !theme.dark });
   };
 
+  const handleTitleChange = (title) => {
+    if (editorRef?.current) placeCaretAtEnd(editorRef.current);
+    updateDocument({ id: document.id, title });
+  };
+
   return (
     <div className="flex flex-col w-full">
       <div className="text-white animate-fade-in text-center w-1/2 mx-auto mb-3 h-0.5/12">
-        <DocumentTitle
-          title={document.title}
-          onChange={(title) => updateDocument({ id: document.id, title })}
-        />
+        <DocumentTitle title={document.title} onChange={handleTitleChange} />
       </div>
       <div className="relative h-11.5/12">
         {isLoading > 0 && (
