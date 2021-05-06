@@ -26,7 +26,6 @@ export default function EditorPanel() {
       id: tempDocument.id,
       content: editorRef.current.innerHTML,
     });
-    console.log(editorRef.current.innerHTML);
   };
 
   const classes = classNames(
