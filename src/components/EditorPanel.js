@@ -4,6 +4,7 @@ import DarkModeToggler from "./DarkModeToggler";
 import { DocumentsContext } from "../context/DocumentsContext";
 import DocumentTitle from "./DocumentTitle";
 import { AppContext } from "../context/AppContext";
+import { placeCaretAtEnd } from "../utils";
 
 export default function EditorPanel() {
   const [content, setContent] = useState("");
@@ -18,7 +19,8 @@ export default function EditorPanel() {
 
   const editorRef = useRef(null);
   const handleChange = () => {
-    setContent(editorRef.current.innerText);
+    setContent(editorRef.current.innerHTML);
+    updateDocument({ id: document.id, content: editorRef.current.innerHTML });
   };
 
   const classes = classNames(
@@ -30,30 +32,19 @@ export default function EditorPanel() {
   );
 
   useEffect(() => {
-    if (document.id != currentDocument.id && lastSaved != content) {
-      updateDocument({ id: document.id, content });
+    if (document.id != currentDocument.id) {
+      setDocument(currentDocument);
+      if (lastSaved != content) updateDocument({ id: document.id, content });
+      console.log("current document changed to:", currentDocument);
     }
-    setDocument(currentDocument);
   }, [currentDocument]);
 
   useEffect(() => {
-    var intervalId = setInterval(function () {
-      if (lastSaved != content) {
-        updateDocument({ id: document.id, content });
-        setLastSaved(content);
-      }
-    }, 5000);
-    return () => {
-      clearInterval(intervalId);
-    };
-  });
-
-  useEffect(() => {
     if (editorRef) {
-      editorRef.current.innerText = document.content || "";
+      editorRef.current.innerHTML = document.content || "";
       setContent(document.content);
       setLastSaved(document.content);
-      editorRef.current.focus();
+      placeCaretAtEnd(editorRef.current);
     }
   }, [document]);
 
@@ -71,7 +62,7 @@ export default function EditorPanel() {
       </div>
       <div className="relative h-11.5/12">
         {isLoading > 0 && (
-          <span className="absolute top-0 right-0 transform -translate-x-8 mx-5 -translate-y-full text-white">
+          <span className="absolute text-xs top-0 right-0 transform -translate-x-4 mx-5 -translate-y-full text-white">
             Saving...
           </span>
         )}
