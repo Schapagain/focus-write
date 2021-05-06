@@ -6,10 +6,12 @@ import DocumentTitle from "./DocumentTitle";
 import { AppContext } from "../context/AppContext";
 import { placeCaretAtEnd } from "../utils";
 
+const ENTER_CHARCODE = 13;
+
 export default function EditorPanel() {
   const [content, setContent] = useState("");
   const [lastSaved, setLastSaved] = useState("");
-  const [document, setDocument] = useState({});
+  const [tempDocument, setTempDocument] = useState({});
 
   const { updateDocument, currentDocument, isLoading } = useContext(
     DocumentsContext
@@ -20,7 +22,11 @@ export default function EditorPanel() {
   const editorRef = useRef(null);
   const handleChange = () => {
     setContent(editorRef.current.innerHTML);
-    updateDocument({ id: document.id, content: editorRef.current.innerHTML });
+    updateDocument({
+      id: tempDocument.id,
+      content: editorRef.current.innerHTML,
+    });
+    console.log(editorRef.current.innerHTML);
   };
 
   const classes = classNames(
@@ -32,21 +38,21 @@ export default function EditorPanel() {
   );
 
   useEffect(() => {
-    if (document.id != currentDocument.id) {
-      setDocument(currentDocument);
-      if (lastSaved != content) updateDocument({ id: document.id, content });
-      console.log("current document changed to:", currentDocument);
+    if (tempDocument.id != currentDocument.id) {
+      setTempDocument(currentDocument);
+      if (lastSaved != content)
+        updateDocument({ id: tempDocument.id, content });
     }
   }, [currentDocument]);
 
   useEffect(() => {
     if (editorRef?.current) {
-      editorRef.current.innerHTML = document.content || "";
-      setContent(document.content);
-      setLastSaved(document.content);
+      editorRef.current.innerHTML = tempDocument.content || "";
+      setContent(tempDocument.content);
+      setLastSaved(tempDocument.content);
       placeCaretAtEnd(editorRef.current);
     }
-  }, [document]);
+  }, [tempDocument]);
 
   const toggleDarkMode = () => {
     changeTheme({ ...theme, dark: !theme.dark });
@@ -54,13 +60,45 @@ export default function EditorPanel() {
 
   const handleTitleChange = (title) => {
     if (editorRef?.current) placeCaretAtEnd(editorRef.current);
-    updateDocument({ id: document.id, title });
+    updateDocument({ id: tempDocument.id, title });
+  };
+
+  const incerptEnterPress = (e) => {
+    if (e.charCode === ENTER_CHARCODE) {
+      e.preventDefault();
+      if (window.getSelection) {
+        const selection = window.getSelection(),
+          range = selection.getRangeAt(0),
+          br = document.createElement("br");
+        range.deleteContents();
+        range.insertNode(br);
+        range.setStartAfter(br);
+        range.setEndAfter(br);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    }
+  };
+
+  const forceLastChildBR = () => {
+    if (editorRef?.current) {
+      if (
+        !editorRef.current.lastChild ||
+        editorRef.current.lastChild.nodeName.toLowerCase() != "br"
+      ) {
+        editorRef.current.appendChild(document.createElement("br"));
+      }
+    }
   };
 
   return (
     <div className="flex flex-col w-full">
       <div className="text-white animate-fade-in text-center w-1/2 mx-auto mb-3 h-0.5/12">
-        <DocumentTitle title={document.title} onChange={handleTitleChange} />
+        <DocumentTitle
+          title={tempDocument.title}
+          onChange={handleTitleChange}
+        />
       </div>
       <div className="relative h-11.5/12">
         {isLoading > 0 && (
@@ -73,6 +111,9 @@ export default function EditorPanel() {
           contentEditable={true}
           onInput={handleChange}
           className={classes}
+          onKeyUp={forceLastChildBR}
+          onMouseUp={forceLastChildBR}
+          onKeyPress={incerptEnterPress}
         ></div>
         <DarkModeToggler
           onChange={toggleDarkMode}
@@ -86,6 +127,6 @@ export default function EditorPanel() {
 }
 
 EditorPanel.defaultProps = {
-  document: {},
+  tempDocument: {},
   setDark: () => null,
 };
