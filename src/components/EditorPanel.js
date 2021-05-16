@@ -127,7 +127,7 @@ export default function EditorPanel() {
           isLoading={isLoading}
         />
         {
-          <p className="absolute bottom-0 right-0 p-2 text-xs">
+          <p className="absolute bottom-0 right-0 p-2 text-xs text-black dark:text-white">
             {wordCount} word{wordCount === 1 ? "" : "s"}
           </p>
         }
