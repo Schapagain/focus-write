@@ -54,6 +54,11 @@ export default function EditorPanel() {
     if (editorRef?.current) {
       editorRef.current.innerHTML = tempDocument.content || "";
       setContent(tempDocument.content);
+      setWordCount(
+        (editorRef.current?.innerText &&
+          editorRef.current?.innerText.trim().split(" ").length) ||
+          0
+      );
       setLastSaved(tempDocument.content);
       placeCaretAtEnd(editorRef.current);
     }
