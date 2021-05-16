@@ -12,20 +12,26 @@ export default function EditorPanel() {
   const [content, setContent] = useState("");
   const [lastSaved, setLastSaved] = useState("");
   const [tempDocument, setTempDocument] = useState({});
+  const [wordCount, setWordCount] = useState(0);
 
-  const { updateDocument, currentDocument, isLoading } = useContext(
-    DocumentsContext
-  );
+  const { updateDocument, currentDocument, isLoading } =
+    useContext(DocumentsContext);
 
   const { theme, changeTheme } = useContext(AppContext);
 
   const editorRef = useRef(null);
   const handleChange = () => {
     setContent(editorRef.current.innerHTML);
+    setWordCount(
+      (editorRef.current?.innerText &&
+        editorRef.current?.innerText.trim().split(" ").length) ||
+        0
+    );
     updateDocument({
       id: tempDocument.id,
       content: editorRef.current.innerHTML,
     });
+    console.log(editorRef.current.innerHTML);
   };
 
   const classes = classNames(
@@ -63,32 +69,32 @@ export default function EditorPanel() {
   };
 
   const incerptEnterPress = (e) => {
-    if (e.charCode === ENTER_CHARCODE) {
-      e.preventDefault();
-      if (window.getSelection) {
-        const selection = window.getSelection(),
-          range = selection.getRangeAt(0),
-          br = document.createElement("br");
-        range.deleteContents();
-        range.insertNode(br);
-        range.setStartAfter(br);
-        range.setEndAfter(br);
-        range.collapse(false);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-    }
+    // if (e.charCode === ENTER_CHARCODE) {
+    //   e.preventDefault();
+    //   if (window.getSelection) {
+    //     const selection = window.getSelection(),
+    //       range = selection.getRangeAt(0),
+    //       br = document.createElement("br");
+    //     range.deleteContents();
+    //     range.insertNode(br);
+    //     range.setStartAfter(br);
+    //     range.setEndAfter(br);
+    //     range.collapse(false);
+    //     selection.removeAllRanges();
+    //     selection.addRange(range);
+    //   }
+    // }
   };
 
   const forceLastChildBR = () => {
-    if (editorRef?.current) {
-      if (
-        !editorRef.current.lastChild ||
-        editorRef.current.lastChild.nodeName.toLowerCase() != "br"
-      ) {
-        editorRef.current.appendChild(document.createElement("br"));
-      }
-    }
+    // if (editorRef?.current) {
+    //   if (
+    //     !editorRef.current.lastChild ||
+    //     editorRef.current.lastChild.nodeName.toLowerCase() != "br"
+    //   ) {
+    //     editorRef.current.appendChild(document.createElement("br"));
+    //   }
+    // }
   };
 
   return (
@@ -120,6 +126,11 @@ export default function EditorPanel() {
           className="right-0 top-0 translate-x-1/2 -translate-y-1/2"
           isLoading={isLoading}
         />
+        {
+          <p className="absolute bottom-0 right-0 p-2 text-xs">
+            {wordCount} word{wordCount === 1 ? "" : "s"}
+          </p>
+        }
       </div>
     </div>
   );
